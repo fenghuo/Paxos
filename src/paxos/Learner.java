@@ -34,8 +34,6 @@ public class Learner {
 
 	public void ReceiveDecide(BallotNumber bal, Integer val) {
 		// decide v
-		countAccept.put(paxos.acceptNumber,
-				(countAccept.get(bal) == null ? 0 : countAccept.get(bal)) + 1);
 		paxos.acceptVal = null;
 	}
 }
