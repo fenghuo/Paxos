@@ -18,10 +18,10 @@ public class Test {
 		}
 		Server[] server = new Server[n];
 		for (int i = 0; i < n; i++) {
-			server[i] = new Server(i + 1, n-2, servers, port[i]);
+			server[i] = new Server(i + 1, 3, servers, port[i]);
 		}
 
-		server[0].proposer.Prepare(111);
+		server[0].SetValue(111);
 	}
 
 	private static class T1 extends Thread {

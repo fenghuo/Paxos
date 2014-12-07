@@ -8,23 +8,27 @@ public class Bank {
 		this.server = server;
 	}
 
-	public boolean deposit(double value) {
-		return false;
+	public boolean deposit(Integer value) {
+		int bal = balance();
+		return server.SetValue(value + bal);
 	}
 
-	public boolean withdraw(double value) {
-		return false;
+	public boolean withdraw(Integer value) {
+		int bal = balance();
+		if (bal < value)
+			return false;
+		return server.SetValue(bal - value);
 	}
 
-	public double balance(double value) {
+	public Integer balance() {
 		return 0;
 	}
 
-	public boolean fail() {
-		return false;
+	public void fail() {
+		server.commService.running = false;
 	}
 
-	public boolean unfail() {
-		return false;
+	public void unfail() {
+		server.commService.running = true;
 	}
 }

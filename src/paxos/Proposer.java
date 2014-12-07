@@ -1,39 +1,60 @@
 package paxos;
 
+import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import util.CommService;
+import util.Log;
 
 public class Proposer {
 
 	private int id;
 	private Paxos paxos;
 	private CommService commService;
-	private AtomicInteger countMajority = new AtomicInteger(0);
+	protected HashMap<BallotNumber, Integer> countMajority = new HashMap<BallotNumber, Integer>();
 	private Integer myVal;
 	private Integer proposedVal;
 	private BallotNumber bal;
+	private Log log;
+	public boolean succeed = false;
 
 	public Proposer(int numberOfMajority, int id, Paxos paxos,
-			CommService commService) {
+			CommService commService, Log log) {
 		this.id = id;
 		this.myVal = null;
 		this.paxos = paxos;
 		this.commService = commService;
+		this.log = log;
 	}
 
-	public void Prepare(Integer proposedVal) {
-		paxos.Increase(id);
-		this.countMajority = new AtomicInteger(0);
+	public void SetLeader(Integer proposedVal) {
 		this.proposedVal = proposedVal;
-		commService.SendPrepare(paxos.ballotNumber);
+		new Thread() {
+			public void run() {
+				while (log.Size() <= paxos.logIndex) {
+					Prepare();
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}.start();
+	}
+
+	public void Prepare() {
+		paxos.Increase(id);
+		this.countMajority.put(paxos.ballotNumber, 0);
+		commService.SendPrepare(paxos.ballotNumber, paxos.logIndex);
 	}
 
 	public synchronized void ReceiveACK(BallotNumber bal,
 			BallotNumber accpetNum, Integer acceptVal) {
-		if (bal.equals(paxos.ballotNumber) && this.countMajority.get() >= 0) {
-			this.countMajority.getAndIncrement();
-			System.out.println(this);
+		if (!countMajority.containsKey(bal))
+			countMajority.put(bal, 0);
+		if (countMajority.get(bal) >= 0) {
+			countMajority.put(bal, countMajority.get(bal) + 1);
 
 			if (acceptVal != null) {
 				if (myVal == null || accpetNum.compareTo(this.bal) > 0) {
@@ -42,14 +63,24 @@ public class Proposer {
 				}
 			}
 
-			if (this.countMajority.get() >= this.paxos.numberOfMajority) {
+			if (this.countMajority.get(bal) >= this.paxos.numberOfMajority) {
 				if (myVal == null)
 					myVal = proposedVal;
-				commService.SendAccept(paxos.ballotNumber, myVal);
-				this.countMajority.set(-1);
+				commService.SendAccept(paxos.ballotNumber, myVal,
+						paxos.logIndex);
+				succeed = true;
+				this.countMajority.put(bal, -1);
 			}
 		}
 		// from majority
 		// send back to all;
+	}
+
+	public boolean Finished(int logIndex) {
+		return log.Size() > logIndex;
+	}
+
+	public boolean Succeed() {
+		return succeed;
 	}
 }

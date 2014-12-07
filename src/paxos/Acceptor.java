@@ -24,7 +24,7 @@ public class Acceptor {
 			paxos.ballotNumber = bal.copy();
 			// send ack to serverId
 			commService.SendACK(paxos.ballotNumber, paxos.acceptNumber,
-					paxos.acceptVal, ip, port);
+					paxos.acceptVal, ip, port, paxos.logIndex);
 		}
 	}
 
@@ -34,7 +34,7 @@ public class Acceptor {
 			paxos.acceptVal = val;
 
 			if (!first.contains(bal)) {
-				commService.SendAccept(bal, val);
+				commService.SendAccept(bal, val, paxos.logIndex);
 				first.add(bal);
 			}
 			// send accept to all

@@ -1,6 +1,7 @@
 package util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import paxos.Acceptor;
 import paxos.Learner;
@@ -8,18 +9,35 @@ import paxos.Paxos;
 import paxos.Proposer;
 
 public class Server {
-	Proposer proposer;
-	Acceptor acceptor;
-	Learner learner;
+	HashMap<Integer, Proposer> proposer;
+	HashMap<Integer, Acceptor> acceptor;
+	HashMap<Integer, Learner> learner;
+	CommService commService;
+	private Log log;
 
 	public Server(int id, int numberOfMajority, ArrayList<Endpoint> servers,
 			int port) {
-		Paxos paxos = new Paxos(numberOfMajority);
-		CommService commService = new CommService(servers);
-		this.proposer = new Proposer(numberOfMajority, id, paxos, commService);
-		this.acceptor = new Acceptor(numberOfMajority, id, paxos, commService);
-		this.learner = new Learner(numberOfMajority, id, paxos, commService);
-		commService.Init(proposer, acceptor, learner, port);
+		log = new Log(id + ".txt");
+		commService = new CommService(servers, id, numberOfMajority);
+		this.proposer = new HashMap<Integer, Proposer>();
+		this.acceptor = new HashMap<Integer, Acceptor>();
+		this.learner = new HashMap<Integer, Learner>();
+		commService.Init(proposer, acceptor, learner, port, log);
 		commService.start();
+	}
+
+	public boolean SetValue(Integer value) {
+		int logIndex = log.Size();
+		commService.Create(logIndex);
+		proposer.get(logIndex).SetLeader(value);
+		while (!proposer.get(logIndex).Finished(logIndex)) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return proposer.get(logIndex).Succeed();
 	}
 }

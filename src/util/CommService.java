@@ -7,27 +7,36 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import paxos.*;
 
 public class CommService extends Thread {
 
 	ArrayList<Endpoint> servers;
-	private Proposer proposer;
-	private Acceptor acceptor;
-	private Learner learner;
+	HashMap<Integer, Proposer> proposer;
+	HashMap<Integer, Acceptor> acceptor;
+	HashMap<Integer, Learner> learner;
 	private int port;
+	private Log log;
+	private int id;
+	private int numberOfMajority;
+	public boolean running = true;
 
-	public CommService(ArrayList<Endpoint> servers) {
+	public CommService(ArrayList<Endpoint> servers, int id, int numberOfMajority) {
 		this.servers = servers;
+		this.id = id;
+		this.numberOfMajority = numberOfMajority;
 	}
 
-	public void Init(Proposer proposer, Acceptor acceptor, Learner learner,
-			int port) {
+	public void Init(HashMap<Integer, Proposer> proposer,
+			HashMap<Integer, Acceptor> acceptor,
+			HashMap<Integer, Learner> learner, int port, Log log) {
 		this.proposer = proposer;
 		this.acceptor = acceptor;
 		this.learner = learner;
 		this.port = port;
+		this.log = log;
 	}
 
 	public void run() {
@@ -55,22 +64,22 @@ public class CommService extends Thread {
 		}
 	}
 
-	public void SendPrepare(BallotNumber bal) {
-		SendToAll(new Message.Prepare(bal).toMsg());
+	public void SendPrepare(BallotNumber bal, int logIndex) {
+		SendToAll(new Message.Prepare(bal, logIndex).toMsg());
 	}
 
 	public void SendACK(BallotNumber bal, BallotNumber accpetNum,
-			Integer acceptVal, String ip, int port) {
+			Integer acceptVal, String ip, int port, int logIndex) {
 		SendTo(new Endpoint(ip, port), new Message.ACK(bal, accpetNum,
-				acceptVal).toMsg());
+				acceptVal, logIndex).toMsg());
 	}
 
-	public void SendAccept(BallotNumber bal, Integer acceptVal) {
-		SendToAll(new Message.Accept(bal, acceptVal).toMsg());
+	public void SendAccept(BallotNumber bal, Integer acceptVal, int logIndex) {
+		SendToAll(new Message.Accept(bal, acceptVal, logIndex).toMsg());
 	}
 
-	public void SendDecide(BallotNumber bal, Integer acceptVal) {
-		SendToAll(new Message.Decide(bal, acceptVal).toMsg());
+	public void SendDecide(BallotNumber bal, Integer acceptVal, int logIndex) {
+		SendToAll(new Message.Decide(bal, acceptVal, logIndex).toMsg());
 	}
 
 	public void SendToAll(String msg) {
@@ -88,6 +97,8 @@ public class CommService extends Thread {
 				final InetSocketAddress address = (InetSocketAddress) clientSocket
 						.getRemoteSocketAddress();
 				final String message = in.readLine();
+				if (!running)
+					continue;
 				new Thread() {
 					public void run() {
 						Call(message, address.getHostName(),
@@ -108,23 +119,44 @@ public class CommService extends Thread {
 			if (readLine.contains(":")) {
 				String type = readLine.split(":")[0];
 				String msg = readLine.split(":")[1];
+				int index = Integer.parseInt(readLine.substring(readLine
+						.lastIndexOf(";") + 1));
+				if (index < log.Size())
+					return;
+				Create(index);
+				System.out.println(log.Size());
 				if (type.equals("Prepare")) {
 					Message.Prepare message = new Message.Prepare(msg);
 					port = 11111;
-					acceptor.ReceivePrepare(message.bal, ip, port);
+					acceptor.get(index).ReceivePrepare(message.bal, ip, port);
 				} else if (type.equals("ACK")) {
 					Message.ACK message = new Message.ACK(msg);
-					proposer.ReceiveACK(message.bal, message.accpetNum,
-							message.acceptVal);
+					proposer.get(index).ReceiveACK(message.bal,
+							message.accpetNum, message.acceptVal);
 				} else if (type.equals("Accept")) {
 					Message.Accept message = new Message.Accept(msg);
-					acceptor.ReceiveAccept(message.accpetNum, message.acceptVal);
-					learner.ReceiveAccept(message.accpetNum, message.acceptVal);
+					acceptor.get(index).ReceiveAccept(message.accpetNum,
+							message.acceptVal);
+					learner.get(index).ReceiveAccept(message.accpetNum,
+							message.acceptVal);
 				} else if (type.equals("Decide")) {
 					Message.Decide message = new Message.Decide(msg);
-					learner.ReceiveDecide(message.accpetNum, message.acceptVal);
+					learner.get(index).ReceiveDecide(message.accpetNum,
+							message.acceptVal);
 				}
 			}
+		}
+	}
+
+	public void Create(int logIndex) {
+		if (!proposer.containsKey(logIndex)) {
+			Paxos paxos = new Paxos(numberOfMajority, logIndex);
+			proposer.put(logIndex, new Proposer(numberOfMajority, id, paxos,
+					this, log));
+			acceptor.put(logIndex, new Acceptor(numberOfMajority, id, paxos,
+					this));
+			learner.put(logIndex, new Learner(numberOfMajority, id, paxos,
+					this, log));
 		}
 	}
 }

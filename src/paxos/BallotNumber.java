@@ -17,6 +17,12 @@ public class BallotNumber implements Comparable<BallotNumber> {
 		return new BallotNumber(num, processId);
 	}
 
+	public BallotNumber(String msg) {
+		String[] s = msg.split(";");
+		num = Integer.parseInt(s[0].trim());
+		processId = Integer.parseInt(s[1].trim());
+	}
+
 	public String toMsg() {
 		return num + ";" + processId + ";";
 	}
