@@ -13,7 +13,7 @@ public class Server {
 	HashMap<Integer, Acceptor> acceptor;
 	HashMap<Integer, Learner> learner;
 	CommService commService;
-	private Log log;
+	public Log log;
 
 	public Server(int id, int numberOfMajority, ArrayList<Endpoint> servers,
 			int port) {

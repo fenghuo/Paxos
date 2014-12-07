@@ -66,4 +66,8 @@ public class Log {
 	public void SetPath(String path) {
 		this.path = path;
 	}
+
+	public Integer GetValue() {
+		return values.get(values.size() - 1);
+	}
 }

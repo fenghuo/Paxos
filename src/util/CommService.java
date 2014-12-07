@@ -121,8 +121,14 @@ public class CommService extends Thread {
 				String msg = readLine.split(":")[1];
 				int index = Integer.parseInt(readLine.substring(readLine
 						.lastIndexOf(";") + 1));
-				if (index < log.Size())
+				if (index < log.Size()) {
+					if (type.equals("Decide")) {
+						Message.Decide message = new Message.Decide(msg);
+						learner.get(index).ReceiveDecide(message.accpetNum,
+								message.acceptVal);
+					}
 					return;
+				}
 				Create(index);
 				System.out.println(log.Size());
 				if (type.equals("Prepare")) {
