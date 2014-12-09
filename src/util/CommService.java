@@ -108,7 +108,7 @@ public class CommService extends Thread {
 				clientSocket.close();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			// e.printStackTrace();
 		}
 		return "";
 	}
@@ -121,6 +121,7 @@ public class CommService extends Thread {
 				String msg = readLine.split(":")[1];
 				int index = Integer.parseInt(readLine.substring(readLine
 						.lastIndexOf(";") + 1));
+				Create(index);
 				if (index < log.Size()) {
 					if (type.equals("Decide")) {
 						Message.Decide message = new Message.Decide(msg);
@@ -129,7 +130,6 @@ public class CommService extends Thread {
 					}
 					return;
 				}
-				Create(index);
 				// System.out.println(log.Size());
 				if (type.equals("Prepare")) {
 					Message.Prepare message = new Message.Prepare(msg);
