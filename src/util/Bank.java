@@ -68,13 +68,13 @@ public class Bank {
 			int opt = in.nextInt();
 			switch (opt) {
 			case 1:
-				Deposit(in.nextInt());
+				System.out.println(Deposit(in.nextInt()));
 				break;
 			case 2:
-				Withdraw(in.nextInt());
+				System.out.println(Withdraw(in.nextInt()));
 				break;
 			case 3:
-				Balance();
+				System.out.println(Balance());
 				break;
 			case 4:
 				Fail();
