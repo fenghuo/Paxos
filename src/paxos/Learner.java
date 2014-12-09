@@ -31,21 +31,31 @@ public class Learner {
 				(countAccept.get(bal) == null ? 0 : countAccept.get(bal)) + 1);
 		if (countAccept.get(bal) >= paxos.numberOfMajority) {
 			// decide v
-			paxos.acceptVal = null;
 			commService.SendDecide(bal, val, paxos.logIndex);
 		}
 	}
 
-	public void ReceiveDecide(BallotNumber bal, Integer val) {
+	public void ReceiveDecide(final BallotNumber bal, final Integer val) {
 		// decide v
 		paxos.acceptVal = null;
 		log.Write(bal, val, paxos.logIndex);
-		
+
 		countDecide.put(bal,
 				(countDecide.get(bal) == null ? 0 : countDecide.get(bal)) + 1);
-		if (!sending && countDecide.get(bal) < 5) {
+		if (!sending) {
 			sending = true;
 			new Thread() {
+				public void run() {
+					while (true) {
+						paxos.acceptVal = null;
+						commService.SendDecide(bal, val, paxos.logIndex);
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+				}
 			}.start();
 		}
 	}
