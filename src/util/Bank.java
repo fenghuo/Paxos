@@ -40,18 +40,26 @@ public class Bank {
 		server.commService.running = true;
 	}
 
+	private static void Print() {
+		for (int i = 0; i < server.log.Size(); i++) {
+			System.out.println(i + "\t" + server.log.numbers.get(i).toString()
+					+ "\t" + server.log.values.get(i));
+		}
+	}
+
 	public static void main(String[] args) throws InterruptedException {
 		ArrayList<Endpoint> servers = new ArrayList<Endpoint>();
 		Bank bank = new Bank(Integer.parseInt(args[0]),
 				Integer.parseInt(args[1]), servers, Integer.parseInt(args[2]));
 		Scanner in = new Scanner(System.in);
 		String line = "";
-		System.out.println("Deposit: 1");
-		System.out.println("Withdraw: 2");
-		System.out.println("Balance: 3");
-		System.out.println("Balance: 4");
-		System.out.println("Balance: 5");
-		while (in.hasNextInt()) {
+		do {
+			System.out.println("Deposit: 1");
+			System.out.println("Withdraw: 2");
+			System.out.println("Balance: 3");
+			System.out.println("Fail: 4");
+			System.out.println("Unfail: 5");
+			System.out.println("Print: 6");
 			int opt = in.nextInt();
 			switch (opt) {
 			case 1:
@@ -69,8 +77,11 @@ public class Bank {
 			case 5:
 				Unfail();
 				break;
+			case 6:
+				Print();
+				break;
 			}
-		}
+		} while (in.hasNextInt());
 
 	}
 }

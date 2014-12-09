@@ -13,8 +13,8 @@ import paxos.BallotNumber;
 
 public class Log {
 
-	private ArrayList<Integer> values;
-	private ArrayList<BallotNumber> numbers;
+	public ArrayList<Integer> values;
+	public ArrayList<BallotNumber> numbers;
 	private String path = null;
 	private BufferedWriter writer = null;
 
@@ -39,24 +39,26 @@ public class Log {
 	}
 
 	public synchronized void Write(BallotNumber bal, Integer val, int logIndex) {
-		if (writer == null)
-			try {
-				writer = new BufferedWriter(new FileWriter(path, true));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 		while (numbers.size() <= logIndex) {
 			values.add(val);
 			numbers.add(bal);
-			try {
-				writer.append(logIndex + " : " + bal.toMsg() + "_" + val);
+		}
+		values.set(logIndex, val);
+		numbers.set(logIndex, bal);
+
+		try {
+			writer = new BufferedWriter(new FileWriter(path, false));
+			for (int i = 0; i < numbers.size(); i++) {
+				writer.append(i + " : " + numbers.get(i).toMsg() + "_"
+						+ values.get(i));
 				writer.newLine();
 				writer.flush();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+
 	}
 
 	public int Size() {
