@@ -115,7 +115,7 @@ public class CommService extends Thread {
 
 	private void Call(String readLine, String ip, int port) {
 		if (readLine != null) {
-			System.out.println("Port: " + port + " Receiving: " + readLine);
+			// System.out.println("Port: " + port + " Receiving: " + readLine);
 			if (readLine.contains(":")) {
 				String type = readLine.split(":")[0];
 				String msg = readLine.split(":")[1];
