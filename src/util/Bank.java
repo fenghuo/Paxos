@@ -42,7 +42,7 @@ public class Bank {
 
 	private static void Print() {
 		for (int i = 0; i < server.log.Size(); i++) {
-			System.out.println(i + "\t" + server.log.numbers.get(i).toString()
+			System.out.println(i + "\t" + server.log.numbers.get(i).toMsg()
 					+ "\t" + server.log.values.get(i));
 		}
 	}
