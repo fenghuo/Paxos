@@ -49,8 +49,8 @@ public class Bank {
 
 	public static void main(String[] args) throws InterruptedException {
 		ArrayList<Endpoint> servers = new ArrayList<Endpoint>();
-		servers.add(new Endpoint("169.231.52.65", 1111));
-		servers.add(new Endpoint("54.169.187.65", 1111));
+		servers.add(new Endpoint("169.231.52.65", 11111));
+		servers.add(new Endpoint("54.169.187.65", 11111));
 		Bank bank = new Bank(Integer.parseInt(args[0]),
 				Integer.parseInt(args[1]), servers, Integer.parseInt(args[2]));
 		Scanner in = new Scanner(System.in);
@@ -65,13 +65,13 @@ public class Bank {
 			int opt = in.nextInt();
 			switch (opt) {
 			case 1:
-				Deposit(in.nextInt());
+				System.out.println(Deposit(in.nextInt()));
 				break;
 			case 2:
-				Withdraw(in.nextInt());
+				System.out.println(Withdraw(in.nextInt()));
 				break;
 			case 3:
-				Balance();
+				System.out.println(Balance());
 				break;
 			case 4:
 				Fail();

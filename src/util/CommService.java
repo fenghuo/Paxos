@@ -47,9 +47,9 @@ public class CommService extends Thread {
 		servers.add(new Endpoint(ip, port));
 	}
 
-	public void SendTo(Endpoint endpoint, String msg) {
-		// System.out.println("Sending : " + msg + " --  " + port + "->"
-		//		+ endpoint.ip + ":" + endpoint.port);
+	public synchronized void SendTo(Endpoint endpoint, String msg) {
+		System.out.println("Sending : " + msg + " --  " + port + "->"
+				+ endpoint.ip + ":" + endpoint.port);
 		String server = endpoint.ip;
 		int port = endpoint.port;
 		try {
@@ -60,6 +60,7 @@ public class CommService extends Thread {
 			out.println();
 			echoSocket.close();
 		} catch (Exception e) {
+			System.err.println(server);
 			e.printStackTrace();
 		}
 	}
@@ -125,7 +126,7 @@ public class CommService extends Thread {
 					if (type.equals("Decide")) {
 						Message.Decide message = new Message.Decide(msg);
 						learner.get(index).ReceiveDecide(message.accpetNum,
-								message.acceptVal);
+								message.acceptVal, ip);
 					}
 					return;
 				}
@@ -148,7 +149,7 @@ public class CommService extends Thread {
 				} else if (type.equals("Decide")) {
 					Message.Decide message = new Message.Decide(msg);
 					learner.get(index).ReceiveDecide(message.accpetNum,
-							message.acceptVal);
+							message.acceptVal, ip);
 				}
 			}
 		}

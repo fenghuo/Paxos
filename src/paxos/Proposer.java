@@ -34,7 +34,7 @@ public class Proposer {
 				while (log.Size() <= paxos.logIndex) {
 					Prepare();
 					try {
-						Thread.sleep(1000);
+						Thread.sleep(100000);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}

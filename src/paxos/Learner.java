@@ -2,6 +2,7 @@ package paxos;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 
 import util.CommService;
 import util.Log;
@@ -12,7 +13,7 @@ public class Learner {
 	private Paxos paxos;
 	private CommService commService;
 	private HashMap<BallotNumber, Integer> countAccept;
-	private HashMap<BallotNumber, Integer> countDecide;
+	private HashMap<BallotNumber, Set<String>> countDecide;
 	private Log log;
 	private boolean sending = false;
 
@@ -22,7 +23,7 @@ public class Learner {
 		this.paxos = paxos;
 		this.commService = commService;
 		this.countAccept = new HashMap<BallotNumber, Integer>();
-		this.countDecide = new HashMap<BallotNumber, Integer>();
+		this.countDecide = new HashMap<BallotNumber, Set<String>>();
 		this.log = log;
 	}
 
@@ -35,13 +36,15 @@ public class Learner {
 		}
 	}
 
-	public void ReceiveDecide(final BallotNumber bal, final Integer val) {
+	public synchronized void ReceiveDecide(final BallotNumber bal,
+			final Integer val, String ip) {
 		// decide v
 		paxos.acceptVal = null;
 		log.Write(bal, val, paxos.logIndex);
 
-		countDecide.put(bal,
-				(countDecide.get(bal) == null ? 0 : countDecide.get(bal)) + 1);
+		if (countDecide.get(bal) == null)
+			countDecide.put(bal, new HashSet<String>());
+		countDecide.get(bal).add(ip);
 		if (!sending) {
 			sending = true;
 			new Thread() {
@@ -49,6 +52,10 @@ public class Learner {
 					while (true) {
 						paxos.acceptVal = null;
 						commService.SendDecide(bal, val, paxos.logIndex);
+						System.out.println(countDecide.get(bal).size());
+						System.out.println(countDecide.get(bal));
+						if (countDecide.get(bal).size() == 2)
+							break;
 						try {
 							Thread.sleep(1000);
 						} catch (InterruptedException e) {
