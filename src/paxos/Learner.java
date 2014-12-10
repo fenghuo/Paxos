@@ -13,7 +13,7 @@ public class Learner {
 	private Paxos paxos;
 	private CommService commService;
 	private HashMap<BallotNumber, Integer> countAccept;
-	private HashMap<BallotNumber, Set<String>> countDecide;
+	private Set<String> countDecide;
 	private Log log;
 	private boolean sending = false;
 
@@ -23,7 +23,7 @@ public class Learner {
 		this.paxos = paxos;
 		this.commService = commService;
 		this.countAccept = new HashMap<BallotNumber, Integer>();
-		this.countDecide = new HashMap<BallotNumber, Set<String>>();
+		this.countDecide = new HashSet<String>();
 		this.log = log;
 	}
 
@@ -42,9 +42,7 @@ public class Learner {
 		paxos.acceptVal = null;
 		log.Write(bal, val, paxos.logIndex);
 
-		if (countDecide.get(bal) == null)
-			countDecide.put(bal, new HashSet<String>());
-		countDecide.get(bal).add(ip);
+		countDecide.add(ip);
 		if (!sending) {
 			sending = true;
 			new Thread() {
@@ -52,9 +50,8 @@ public class Learner {
 					while (true) {
 						paxos.acceptVal = null;
 						commService.SendDecide(bal, val, paxos.logIndex);
-						System.out.println(countDecide.get(bal).size());
-						System.out.println(countDecide.get(bal));
-						if (countDecide.get(bal).size() == 4)
+						System.out.println(countDecide.size());
+						if (countDecide.size() == 5)
 							break;
 						try {
 							Thread.sleep(1000);
