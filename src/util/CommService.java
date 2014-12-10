@@ -64,8 +64,6 @@ public class CommService extends Thread {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		if (s == false)
-			SendTo(endpoint, msg);
 	}
 
 	public void SendPrepare(BallotNumber bal, int logIndex) {
