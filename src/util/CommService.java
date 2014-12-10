@@ -48,8 +48,8 @@ public class CommService extends Thread {
 	}
 
 	public void SendTo(Endpoint endpoint, String msg) {
-		 System.out.println("Sending : " + msg + " --  " + port + "->"
-		 + endpoint.ip + ":" + endpoint.port);
+		System.out.println("Sending : " + msg + " --  " + port + "->"
+				+ endpoint.ip + ":" + endpoint.port);
 		String server = endpoint.ip;
 		int port = endpoint.port;
 		boolean s = false;
@@ -162,7 +162,7 @@ public class CommService extends Thread {
 			proposer.put(logIndex, new Proposer(numberOfMajority, id, paxos,
 					this, log));
 			acceptor.put(logIndex, new Acceptor(numberOfMajority, id, paxos,
-					this));
+					this, log));
 			learner.put(logIndex, new Learner(numberOfMajority, id, paxos,
 					this, log));
 		}

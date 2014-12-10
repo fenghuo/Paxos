@@ -26,7 +26,11 @@ public class Learner {
 		this.log = log;
 	}
 
-	public void ReceiveAccept(BallotNumber bal, Integer val) {
+	public synchronized void ReceiveAccept(BallotNumber bal, Integer val) {
+		if (paxos.logIndex < log.Size())
+			return;
+		if (bal.compareTo(paxos.ballotNumber) < 0)
+			return;
 		countAccept.put(bal,
 				(countAccept.get(bal) == null ? 0 : countAccept.get(bal)) + 1);
 		if (countAccept.get(bal) >= paxos.numberOfMajority) {
@@ -35,7 +39,10 @@ public class Learner {
 		}
 	}
 
-	public void ReceiveDecide(final BallotNumber bal, final Integer val) {
+	public synchronized void ReceiveDecide(final BallotNumber bal,
+			final Integer val) {
+		if (paxos.logIndex < log.Size())
+			return;
 		// decide v
 		paxos.acceptVal = null;
 		log.Write(bal, val, paxos.logIndex);

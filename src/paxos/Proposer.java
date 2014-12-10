@@ -43,7 +43,9 @@ public class Proposer {
 		}.start();
 	}
 
-	public void Prepare() {
+	public synchronized void Prepare() {
+		if (paxos.logIndex < log.Size())
+			return;
 		paxos.Increase(id);
 		this.countMajority.put(paxos.ballotNumber, 0);
 		commService.SendPrepare(paxos.ballotNumber, paxos.logIndex);
@@ -51,6 +53,8 @@ public class Proposer {
 
 	public synchronized void ReceiveACK(BallotNumber bal,
 			BallotNumber accpetNum, Integer acceptVal) {
+		if (paxos.logIndex < log.Size())
+			return;
 		if (!countMajority.containsKey(bal))
 			countMajority.put(bal, 0);
 		if (countMajority.get(bal) >= 0) {
