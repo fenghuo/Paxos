@@ -50,7 +50,7 @@ public class Bank {
 	public static void main(String[] args) throws InterruptedException {
 		ArrayList<Endpoint> servers = new ArrayList<Endpoint>();
 		servers.add(new Endpoint("169.231.52.65", 1111));
-		servers.add(new Endpoint("128.111.43.14", 1111));
+		servers.add(new Endpoint("54.169.187.65", 1111));
 		Bank bank = new Bank(Integer.parseInt(args[0]),
 				Integer.parseInt(args[1]), servers, Integer.parseInt(args[2]));
 		Scanner in = new Scanner(System.in);
