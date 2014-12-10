@@ -55,7 +55,7 @@
     </target>
     <target name="Bank">
         <java classname="util.Bank" failonerror="true" fork="yes">
-            <arg line="0 3 11111"/>
+            <arg line="1 2 11111"/>
             <classpath refid="Paxos.classpath"/>
         </java>
     </target>

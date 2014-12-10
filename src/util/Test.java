@@ -24,11 +24,6 @@ public class Test {
 		for (int i = 0; i < n; i++) {
 			server[i] = new Server(i + 1, 3, servers, port[i]);
 		}
-
-		server[0].SetValue(new Date().getSeconds());
-
-		if (false)
-			return;
 		final Scanner in = new Scanner(System.in);
 		String line = "";
 		do {

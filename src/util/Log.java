@@ -70,6 +70,8 @@ public class Log {
 	}
 
 	public Integer GetValue() {
+		if (values.size() == 0)
+			return 0;
 		return values.get(values.size() - 1);
 	}
 }
