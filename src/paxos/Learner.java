@@ -54,7 +54,7 @@ public class Learner {
 						commService.SendDecide(bal, val, paxos.logIndex);
 						System.out.println(countDecide.get(bal).size());
 						System.out.println(countDecide.get(bal));
-						if (countDecide.get(bal).size() == 2)
+						if (countDecide.get(bal).size() == 4)
 							break;
 						try {
 							Thread.sleep(1000);

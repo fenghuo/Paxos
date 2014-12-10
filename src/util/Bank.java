@@ -51,6 +51,8 @@ public class Bank {
 		ArrayList<Endpoint> servers = new ArrayList<Endpoint>();
 		servers.add(new Endpoint("169.231.52.65", 11111));
 		servers.add(new Endpoint("54.169.187.65", 11111));
+		servers.add(new Endpoint("54.149.87.52", 11111));
+		servers.add(new Endpoint("54.154.0.20", 11111));
 		Bank bank = new Bank(Integer.parseInt(args[0]),
 				Integer.parseInt(args[1]), servers, Integer.parseInt(args[2]));
 		Scanner in = new Scanner(System.in);
