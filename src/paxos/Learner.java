@@ -48,7 +48,7 @@ public class Learner {
 				public void run() {
 					while (true) {
 						paxos.acceptVal = null;
-						commService.SendDecide(bal, val, paxos.logIndex);
+						// commService.SendDecide(bal, val, paxos.logIndex);
 						try {
 							Thread.sleep(5000);
 						} catch (InterruptedException e) {

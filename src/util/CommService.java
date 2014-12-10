@@ -48,10 +48,11 @@ public class CommService extends Thread {
 	}
 
 	public void SendTo(Endpoint endpoint, String msg) {
-		// System.out.println("Sending : " + msg + " --  " + port + "->"
-		//		+ endpoint.ip + ":" + endpoint.port);
+		 System.out.println("Sending : " + msg + " --  " + port + "->"
+		 + endpoint.ip + ":" + endpoint.port);
 		String server = endpoint.ip;
 		int port = endpoint.port;
+		boolean s = false;
 		try {
 			Socket echoSocket = new Socket(server, port);
 			PrintWriter out = new PrintWriter(echoSocket.getOutputStream(),
@@ -59,9 +60,12 @@ public class CommService extends Thread {
 			out.print(msg);
 			out.println();
 			echoSocket.close();
+			s = true;
 		} catch (Exception e) {
-			// e.printStackTrace();
+			e.printStackTrace();
 		}
+		if (s == false)
+			SendTo(endpoint, msg);
 	}
 
 	public void SendPrepare(BallotNumber bal, int logIndex) {
@@ -115,7 +119,7 @@ public class CommService extends Thread {
 
 	private void Call(String readLine, String ip, int port) {
 		if (readLine != null) {
-			System.out.println("Port: " + port + " Receiving: " + readLine);
+			// System.out.println("Port: " + port + " Receiving: " + readLine);
 			if (readLine.contains(":")) {
 				String type = readLine.split(":")[0];
 				String msg = readLine.split(":")[1];

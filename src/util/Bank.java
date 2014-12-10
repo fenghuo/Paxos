@@ -57,25 +57,37 @@ public class Bank {
 		servers.add(new Endpoint("128.111.43.62", 11111));
 		Bank bank = new Bank(Integer.parseInt(args[0]),
 				Integer.parseInt(args[1]), servers, Integer.parseInt(args[2]));
-		Scanner in = new Scanner(System.in);
+		final Scanner in = new Scanner(System.in);
+		System.out.println("Deposit: 1");
+		System.out.println("Withdraw: 2");
+		System.out.println("Balance: 3");
+		System.out.println("Fail: 4");
+		System.out.println("Unfail: 5");
+		System.out.println("Print: 6");
 		String line = "";
 		do {
-			System.out.println("Deposit: 1");
-			System.out.println("Withdraw: 2");
-			System.out.println("Balance: 3");
-			System.out.println("Fail: 4");
-			System.out.println("Unfail: 5");
-			System.out.println("Print: 6");
 			int opt = in.nextInt();
 			switch (opt) {
 			case 1:
 				System.out.println(Deposit(in.nextInt()));
+//				new Thread() {
+//					public void run() {
+//					}
+//				}.start();
 				break;
 			case 2:
 				System.out.println(Withdraw(in.nextInt()));
+//				new Thread() {
+//					public void run() {
+//					}
+//				}.start();
 				break;
 			case 3:
-				System.out.println(Balance());
+				new Thread() {
+					public void run() {
+						System.out.println(Balance());
+					}
+				}.start();
 				break;
 			case 4:
 				Fail();
@@ -87,7 +99,7 @@ public class Bank {
 				Print();
 				break;
 			}
-		} while (in.hasNextInt());
+		} while (true);
 
 	}
 }

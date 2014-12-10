@@ -66,6 +66,9 @@ public class Proposer {
 			if (this.countMajority.get(bal) >= this.paxos.numberOfMajority) {
 				if (myVal == null)
 					myVal = proposedVal;
+				System.out.println(paxos.ballotNumber);
+				System.out.println(myVal);
+				System.out.println(paxos.logIndex);
 				commService.SendAccept(paxos.ballotNumber, myVal,
 						paxos.logIndex);
 				succeed = true;
