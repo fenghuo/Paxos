@@ -50,7 +50,7 @@ public class Learner {
 						paxos.acceptVal = null;
 						commService.SendDecide(bal, val, paxos.logIndex);
 						try {
-							Thread.sleep(1000);
+							Thread.sleep(5000);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
